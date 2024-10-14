@@ -3,9 +3,7 @@ import './App.css'
 import { EventContext } from './components/EventProvider/EventProvider'
 
 function App() {
-  const [eventsArray] = useContext(EventContext)
-
-  console.log(eventsArray);
+  const eventsArray = useContext(EventContext)
   
   return (
     <>
