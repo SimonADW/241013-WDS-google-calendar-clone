@@ -1,4 +1,5 @@
-import React from 'react'
+import { SelectedDate } from "../Calendar/Calendar";
+
 
 
 // COMPONENT TO CONTAIN DATE AND EVENT-LISININGS
@@ -7,9 +8,13 @@ type DateofMonthProps = {
   month: number;  
   date: number;
   dayClass?: string;
+  setModalOpen:  React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate | null>>;
 }
 
-export const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass }) => {
+
+
+const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, setModalOpen, setSelectedDate }) => {
 
 	const dayOfWeek = new Date(year, month, date).getDay();	
 
@@ -23,15 +28,20 @@ export const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, day
 		"Saturday"
 	];
 
+	const handleAddEvent = (year: number, month: number, date: number) => {
+		setModalOpen(true)
+		setSelectedDate({ year, month, date })
+	}
+
   return (
 	<div className={`day ${dayClass}`}>
 		    <div className="day-header">
               <div className="week-name">{days[dayOfWeek]}</div>
               <div className="day-number">{date}</div>
-              <button className="add-event-btn">+</button>
+              <button className="add-event-btn" onClick={()=>handleAddEvent(year, month, date)}>+</button>
             </div>
 	</div>
   )
 }
 
-export default Date
+export default DateOfMonth;

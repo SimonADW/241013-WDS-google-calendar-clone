@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { DateOfMonth } from "../Date/DateOfMonth";
+import DateOfMonth from "../Date/DateOfMonth";
+import AddEventModal from "../AddEventModal/AddEventModal";
+
+export type SelectedDate = { year: number; month: number; date: number };
 
 // COMPONENT TO CONTAIN MONTH AND MONTH SELECTORS
-export const Calendar = () => {
+const Calendar = () => {
 	const [month, setMonth] = useState(new Date().getMonth());
 	const [year, setYear] = useState<number>(new Date().getFullYear());
+	const [modalOpen, setModalOpen] = useState(false);
+	const [selectedDate, setSelectedDate] = useState<SelectedDate | null>(null);
 
 	const months = [
 		"January",
@@ -21,6 +26,7 @@ export const Calendar = () => {
 		"December",
 	];
 
+	// FUNCTION TO HANDLE MONTH CHANGE BUTTONS
 	const handleMonthChange = (direction: number) => {
 		if (month === 0 && direction === -1) {
 			setMonth(11);
@@ -34,17 +40,16 @@ export const Calendar = () => {
 		setMonth((prevMonth) => prevMonth + direction);
 	};
 
-
-
+	// FUNCTION TO GET ARRAY WITH DAYS MAP OVER IN JSX
 	const getArrayWithDaysToDisplay = () => {
 		const lastDayOfPrevMonth = new Date(year, month, 0).getDay();
 		const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
 		const lastDayOfMonth = new Date(year, month, lastDateOfMonth).getDay();
-		
+
 		// DAYS OF THE PREVIOUS MONTH
 		const daysOfPrevMonth = [];
-		let lastDateOfPrevMonth = new Date(year, month, 0).getDate();	
-		for (let i = lastDayOfPrevMonth; i > 0; i--) {		
+		let lastDateOfPrevMonth = new Date(year, month, 0).getDate();
+		for (let i = lastDayOfPrevMonth; i > 0; i--) {
 			daysOfPrevMonth.push(lastDateOfPrevMonth);
 			lastDateOfPrevMonth--;
 		}
@@ -60,11 +65,12 @@ export const Calendar = () => {
 		for (let i = 1; i <= 7 - lastDayOfMonth; i++) {
 			daysOfNextMonth.push(i);
 		}
-		return [ daysOfPrevMonth, daysOfMonth, daysOfNextMonth];
+
+		return [daysOfPrevMonth, daysOfMonth, daysOfNextMonth];
 	};
 
-	const [ daysOfPrevMonth, daysOfMonth, daysOfNextMonth] = getArrayWithDaysToDisplay();
-
+	const [daysOfPrevMonth, daysOfMonth, daysOfNextMonth] =
+		getArrayWithDaysToDisplay();
 
 	return (
 		<>
@@ -94,7 +100,9 @@ export const Calendar = () => {
 						year={year}
 						month={month}
 						date={date}
-						dayClass="old-month-day"						
+						dayClass="old-month-day"
+						setModalOpen={setModalOpen}
+						setSelectedDate={setSelectedDate}
 					/>
 				))}
 				{daysOfMonth.map((date) => (
@@ -103,6 +111,8 @@ export const Calendar = () => {
 						year={year}
 						month={month}
 						date={date}
+						setModalOpen={setModalOpen}
+						setSelectedDate={setSelectedDate}
 					/>
 				))}
 				{daysOfNextMonth.map((date) => (
@@ -112,9 +122,18 @@ export const Calendar = () => {
 						month={month}
 						date={date}
 						dayClass="non-month-day"
+						setModalOpen={setModalOpen}
+						setSelectedDate={setSelectedDate}
 					/>
 				))}
 			</div>
+
+			{modalOpen && (
+				<AddEventModal
+					setModalOpen={setModalOpen}
+					selectedDate={selectedDate}
+				/>
+			)}
 		</>
 	);
 };
