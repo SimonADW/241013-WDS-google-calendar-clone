@@ -1,18 +1,14 @@
 import { useContext } from 'react'
 import './App.css'
 import { EventContext } from './components/EventProvider/EventProvider'
+import Calendar from './components/Calendar/Calendar'
 
 function App() {
   const eventsArray = useContext(EventContext)
   
   return (
     <>
-      {eventsArray.map((booking) => (
-        <div key={booking.id}>
-          <h1>{booking.title}</h1>
-        </div>
-      ))
-    }
+      <Calendar />
     </>
   )
 }
