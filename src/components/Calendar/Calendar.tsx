@@ -2,14 +2,15 @@ import { useState } from "react";
 import DateOfMonth from "../Date/DateOfMonth";
 import AddEventModal from "../AddEventModal/AddEventModal";
 
-export type SelectedDate = { year: number; month: number; date: number };
+export type SelectedDate = { year: number; month: number; date: number } | null;
 
 // COMPONENT TO CONTAIN MONTH AND MONTH SELECTORS
 const Calendar = () => {
 	const [month, setMonth] = useState(new Date().getMonth());
 	const [year, setYear] = useState<number>(new Date().getFullYear());
 	const [modalOpen, setModalOpen] = useState(false);
-	const [selectedDate, setSelectedDate] = useState<SelectedDate | null>(null);
+	const [selectedDate, setSelectedDate] = useState<SelectedDate>(null);
+	const [isEditing, setIsEditing] = useState(false);
 
 	const months = [
 		"January",
@@ -132,6 +133,8 @@ const Calendar = () => {
 				<AddEventModal
 					setModalOpen={setModalOpen}
 					selectedDate={selectedDate}
+					isEditing={isEditing}
+					setIsEditing={setIsEditing}
 				/>
 			)}
 		</>

@@ -1,12 +1,64 @@
-import React from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { SelectedDate } from "../Calendar/Calendar";
+import { EventContext } from "../EventProvider/EventProvider.tsx";
 
 type AddEventModalProps = {
 	setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: SelectedDate;
+	isEditing: boolean;
+	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const AddEventModal = ({ setModalOpen, selectedDate }: AddEventModalProps) => {
+
+const AddEventModal = ({
+	setModalOpen,
+	selectedDate,
+	isEditing,
+	setIsEditing,
+}: AddEventModalProps) => {
+	const [formValues, setFormValues] = useState({
+		name: "",
+		allDay: false,
+		startTime: "",
+		endTime: "",
+		color: "blue",
+		id: Date.now(),
+	});
+
+	// @TODO: FIX TYPE ERROR	
+	// GET FUNCTIONS FROM useEvent HOOK
+	const { addEvent, editEvent, deleteEvent } = useContext(EventContext);
+	
+	// HANDLE FORM SUBMISSION
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (isEditing) {
+			editEvent(formValues);
+		} else {
+			addEvent(formValues);
+		}
+		setIsEditing(false);
+		setModalOpen(false);
+	};
+
+	const handleDelete = () => {
+		deleteEvent(formValues);
+		setIsEditing(false);
+		setModalOpen(false);
+	};
+
+	// HANDLE FORM INPUT CHANGE
+	const handleChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const { name, value } = e.target;
+			setFormValues({
+				...formValues,
+				[name]: value,
+			});
+		},
+		[formValues]
+	);
+
 	return (
 		<div className="modal">
 			<div className="overlay"></div>
@@ -22,13 +74,25 @@ const AddEventModal = ({ setModalOpen, selectedDate }: AddEventModalProps) => {
 					</button>
 				</div>
 
-				<form>
+				<form onSubmit={handleSubmit}>
 					<div className="form-group">
 						<label htmlFor="name">Name</label>
-						<input type="text" name="name" id="name" />
+						<input
+							type="text"
+							name="name"
+							id="name"
+							value={formValues.name}
+							onChange={handleChange}
+						/>
 					</div>
 					<div className="form-group checkbox">
-						<input type="checkbox" name="all-day" id="all-day" />
+						<input
+							type="checkbox"
+							name="all-day"
+							id="all-day"
+							value={formValues.allDay.toString()}
+							onChange={handleChange}
+						/>
 						<label htmlFor="all-day">All Day?</label>
 					</div>
 					<div className="row">
@@ -36,13 +100,21 @@ const AddEventModal = ({ setModalOpen, selectedDate }: AddEventModalProps) => {
 							<label htmlFor="start-time">Start Time</label>
 							<input
 								type="time"
-								name="start-time"
+								name="startTime"
 								id="start-time"
+								value={formValues.startTime}
+								onChange={handleChange}
 							/>
 						</div>
 						<div className="form-group">
 							<label htmlFor="end-time">End Time</label>
-							<input type="time" name="end-time" id="end-time" />
+							<input
+								type="time"
+								name="endTime"
+								id="end-time"
+								value={formValues.endTime}
+								onChange={handleChange}
+							/>
 						</div>
 					</div>
 
@@ -54,8 +126,9 @@ const AddEventModal = ({ setModalOpen, selectedDate }: AddEventModalProps) => {
 								name="color"
 								value="blue"
 								id="blue"
-								checked
 								className="color-radio"
+								checked={formValues.color === "blue"}
+								onChange={handleChange}
 							/>
 							<label htmlFor="blue">
 								<span className="sr-only">Blue</span>
@@ -66,6 +139,8 @@ const AddEventModal = ({ setModalOpen, selectedDate }: AddEventModalProps) => {
 								value="red"
 								id="red"
 								className="color-radio"
+								checked={formValues.color === "red"}
+								onChange={handleChange}
 							/>
 							<label htmlFor="red">
 								<span className="sr-only">Red</span>
@@ -76,6 +151,8 @@ const AddEventModal = ({ setModalOpen, selectedDate }: AddEventModalProps) => {
 								value="green"
 								id="green"
 								className="color-radio"
+								checked={formValues.color === "green"}
+								onChange={handleChange}
 							/>
 							<label htmlFor="green">
 								<span className="sr-only">Green</span>
@@ -83,12 +160,28 @@ const AddEventModal = ({ setModalOpen, selectedDate }: AddEventModalProps) => {
 						</div>
 					</div>
 					<div className="row">
-						<button className="btn btn-success" type="submit">
-							Add
-						</button>
-						<button className="btn btn-delete" type="button">
-							Delete
-						</button>
+						{/* RENDER BUTTONS DEPENDING ON IsEditing */}
+						{isEditing ? (
+							<>
+								<button
+									className="btn btn-success"
+									type="submit"
+								>
+									Save
+								</button>
+								<button
+									className="btn btn-delete"
+									type="button"
+									onClick={handleDelete}
+								>
+									Delete
+								</button>
+							</>
+						) : (
+							<button className="btn btn-success" type="submit">
+								Add
+							</button>
+						)}
 					</div>
 				</form>
 			</div>
