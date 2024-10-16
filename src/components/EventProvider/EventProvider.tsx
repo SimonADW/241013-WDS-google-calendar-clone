@@ -1,13 +1,7 @@
 import React, { createContext } from "react";
-import useEvent, { Event } from "../../hooks/useEvent.ts";
+import useEvent, { UseEventTypes } from "../../hooks/useEvent.ts";
 
-type EventContextType = {
-  eventsArray: Event[];
-  addEvent: (event: Event) => void;
-  editEvent: (event: Event) => void;
-  deleteEvent: (event: Event) => void;
-}
-
+type EventContextType = UseEventTypes | undefined;
 
 type EventProviderProps = {
 	children: React.ReactNode;
@@ -16,7 +10,7 @@ type EventProviderProps = {
 export const EventContext = createContext<EventContextType | undefined>(undefined);
 
 const EventProvider = ({ children }: EventProviderProps) => {
-	const [ eventsArray, addEvent, editEvent, deleteEvent ] =  useEvent();	
+	const { eventsArray, addEvent, editEvent, deleteEvent } =  useEvent();
 	
 	return (
 	<EventContext.Provider value={{eventsArray, addEvent, editEvent, deleteEvent }}>

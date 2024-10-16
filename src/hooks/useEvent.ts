@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 export type Event = {
+	date: string,
 	name: string,
 	allDay: boolean,
 	startTime: string,
@@ -12,8 +13,17 @@ export type Event = {
 export type AddEvent = (event: Event) => void;
 export type EditEvent = (event: Event) => void;
 export type DeleteEvent = (event: Event) => void;
+export type EventsArray = Event[];
 
-const useEvent = (): [Event[], AddEvent, EditEvent, DeleteEvent] => {
+export type UseEventTypes = {
+	eventsArray: Event[],
+	addEvent: AddEvent,
+	editEvent: EditEvent,
+	deleteEvent: DeleteEvent
+};
+
+
+const useEvent = (): UseEventTypes => {
 	const [eventsArray, setEventsArray] = useState<Event[]>([]);
 
 	// GET AN ARRAY OF EVENT ON SELECTED DAY (INCOMPLETE)
@@ -32,7 +42,6 @@ const useEvent = (): [Event[], AddEvent, EditEvent, DeleteEvent] => {
 	const addEvent: AddEvent = (event) => {
 		setEventsArray([...eventsArray, event]);		
 		console.log(eventsArray);
-		
 		// Code to add an event heres
 	};
 	
@@ -52,7 +61,7 @@ const useEvent = (): [Event[], AddEvent, EditEvent, DeleteEvent] => {
 	console.log(eventsArray);
 	}, [eventsArray]);
 	
-	return [eventsArray, addEvent, editEvent, deleteEvent];
+	return { eventsArray, addEvent, editEvent, deleteEvent };
 };
 
 export default useEvent;

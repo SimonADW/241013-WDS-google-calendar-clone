@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SelectedDate } from "../Calendar/Calendar";
-import { EventContext } from "../EventProvider/EventProvider.tsx";
+import { useEventContext } from "../../hooks/useEventContext.ts";
 
 type AddEventModalProps = {
 	setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -9,7 +9,6 @@ type AddEventModalProps = {
 	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-
 const AddEventModal = ({
 	setModalOpen,
 	selectedDate,
@@ -17,6 +16,7 @@ const AddEventModal = ({
 	setIsEditing,
 }: AddEventModalProps) => {
 	const [formValues, setFormValues] = useState({
+		date: `${selectedDate.date}/${selectedDate.month + 1}/${selectedDate.year}`,
 		name: "",
 		allDay: false,
 		startTime: "",
@@ -27,7 +27,7 @@ const AddEventModal = ({
 
 	// @TODO: FIX TYPE ERROR	
 	// GET FUNCTIONS FROM useEvent HOOK
-	const { addEvent, editEvent, deleteEvent } = useContext(EventContext);
+	const { addEvent, editEvent, deleteEvent } = useEventContext();
 	
 	// HANDLE FORM SUBMISSION
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,7 +88,7 @@ const AddEventModal = ({
 					<div className="form-group checkbox">
 						<input
 							type="checkbox"
-							name="all-day"
+							name="allDay"
 							id="all-day"
 							value={formValues.allDay.toString()}
 							onChange={handleChange}
