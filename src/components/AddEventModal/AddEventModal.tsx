@@ -24,8 +24,7 @@ const AddEventModal = ({
 		color: "blue",
 		id: Date.now(),
 	});
-
-	// @TODO: FIX TYPE ERROR	
+	
 	// GET FUNCTIONS FROM useEvent HOOK
 	const { addEvent, editEvent, deleteEvent } = useEventContext();
 	

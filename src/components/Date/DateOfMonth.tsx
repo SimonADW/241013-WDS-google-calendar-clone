@@ -31,13 +31,23 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, 
 	];
 
 	// GET EVENTS OF THE DAY
-	const daysEventsArray: Event[] = eventsArray.filter((event: Event) => {
-		const eventDate = new Date(year, month, date).toLocaleDateString();	
-	
-		return (
-			eventDate === event.date
-		);
-	})
+	const getAndSortEvents = (eventsArray: Event[]) => {
+		const eventsOfTheDate: Event[] = eventsArray.filter((event: Event) => {
+			const eventDate = new Date(year, month, date).toLocaleDateString();		
+			return (
+				eventDate === event.date
+			);
+		});
+
+		const sortedEventsArray = eventsOfTheDate.sort((a, b)=> 			
+			Number(a.startTime.replace(":","")) - Number(b.startTime.replace(":",""))
+		)
+		return sortedEventsArray
+	}
+
+	const eventsOfTheDate = getAndSortEvents(eventsArray);
+	 
+
 
 	const handleAddEvent = (year: number, month: number, date: number) => {
 		setModalOpen(true)
@@ -53,7 +63,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, 
             </div>
 
 			<div className="events">
-				{daysEventsArray.map((event, index) => 
+				{eventsOfTheDate.map((event, index) => 
 					<EventListing key={index} event={event} />	
 				)}
 			</div>
