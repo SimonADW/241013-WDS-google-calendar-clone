@@ -69,6 +69,33 @@ const AddEventModal = ({
 		[formValues]
 	);
 
+	// VALIDATE THAT END TIME IS AFTER START TIME
+	const validateTime = () => {
+		const startTime = formValues.startTime;
+		const endTime = formValues.endTime;
+	
+		if (startTime && endTime) {
+		  const start = new Date(`1970-01-01T${startTime}:00`);
+		  const end = new Date(`1970-01-01T${endTime}:00`);
+		  const endTimeInput = document.getElementById("end-time") as HTMLInputElement | null;
+	
+		  if (endTimeInput) {
+			if (end <= start) {
+			  // SET CUSTOM VALIDITY FOR THE END TIME INPUT IF IT'S INVALID
+			  endTimeInput.setCustomValidity("End time must be after start time.");
+			} else {
+			  // CLEAR CUSTOM VALIDITY IF VALID
+			  endTimeInput.setCustomValidity("");
+			}
+		  }
+		}
+	  };
+
+	  const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		handleChange(event)
+		validateTime()
+	  }
+
 	// HANDLE CLOSE MODAL
 	const handleClose = ()=> {
 		setIsEditing(null);
@@ -131,8 +158,10 @@ const AddEventModal = ({
 								name="startTime"
 								id="start-time"
 								value={formValues.startTime}
-								onChange={handleChange}
+								onChange={(e)=>handleTimeChange(e)}
 								disabled={formValues.allDay}
+								required={!isEditing}
+								
 								/>
 						</div>
 						<div className="form-group">
@@ -142,8 +171,10 @@ const AddEventModal = ({
 								name="endTime"
 								id="end-time"
 								value={formValues.endTime}
-								onChange={handleChange}
+								onChange={(e)=>handleTimeChange(e)}
 								disabled={formValues.allDay}
+								required={!isEditing}
+
 							/>
 						</div>
 					</div>
