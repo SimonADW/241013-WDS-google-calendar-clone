@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type Event = {
 	date: string,
@@ -24,41 +24,27 @@ export type UseEventTypes = {
 
 
 const useEvent = (): UseEventTypes => {
-	const [eventsArray, setEventsArray] = useState<Event[]>([]);
+	const [eventsArray, setEventsArray] = useState<Event[]>(() => {
+		const storedEvents = window.localStorage.getItem("calendarEvents");
+		return storedEvents ? JSON.parse(storedEvents) : [];
+	});
 
-	// GET AN ARRAY OF EVENT ON SELECTED DAY (INCOMPLETE)
-	// const getCurrentDaysEvents = (year: number, month: number, date: number) => {
-	// 	const currentDay = new Date(year, month, date);
-	// 	return eventsArray.filter((event) => {
-	// 		const eventDate = new Date(event.date);
-	// 		return (
-	// 			eventDate.toDateString() === currentDay.toDateString()
-	// 		);
-	// 	});
-	// };
-
+	const addEvent: AddEvent = useCallback((event) => {
+		setEventsArray((prevEventsArray)=> [...prevEventsArray, event]);						
+	}, []);
 	
-
-	const addEvent: AddEvent = (event) => {
-		setEventsArray([...eventsArray, event]);		
-		console.log(eventsArray);
-		// Code to add an event heres
-	};
-	
-	const editEvent: EditEvent = (event) => {
+	const editEvent: EditEvent = useCallback((event) => {
 		setEventsArray((prevEventsArray) =>
 			prevEventsArray.map((e) => (e.id === event.id ? event : e))
-	);		
-		// Code to edit an event here
-	};
+		);				
+	}, []);
 	
-	const deleteEvent: DeleteEvent = (event) => {
-		setEventsArray(eventsArray.filter((e) => e.id !== event.id));
-		// Code to delete an event here	
-	};
+	const deleteEvent: DeleteEvent = useCallback((event) => {
+		setEventsArray((prevEventsArray)=> prevEventsArray.filter((e) => e.id !== event.id));		
+	}, []);
 
 	useEffect(() => {
-	console.log(eventsArray);
+		window.localStorage.setItem("calendarEvents", JSON.stringify(eventsArray));
 	}, [eventsArray]);
 	
 	return { eventsArray, addEvent, editEvent, deleteEvent };

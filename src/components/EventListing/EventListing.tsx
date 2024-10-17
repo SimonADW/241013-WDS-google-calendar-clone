@@ -14,7 +14,7 @@ const EventListing = ({ event }: EventListingProps) => {
 			) : (
 				<button className="event">
 					<div className={`color-dot ${event.color}`}></div>
-					<div className="event-time">{`${event.startTime}am`}</div>
+					<div className="event-time">{`${event.startTime}`}</div>
 					<div className="event-name">{event.name}</div>
 				</button>
 			)}
