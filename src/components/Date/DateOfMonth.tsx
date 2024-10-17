@@ -1,8 +1,8 @@
-
 import { SelectedDate } from "../Calendar/Calendar";
 import EventListing from "../EventListing/EventListing";
 import type { Event } from "../../hooks/useEvent";
 import { useEventContext } from "../../hooks/useEventContext";
+import { useCallback } from "react";
 
 type DateofMonthProps = {
 	year: number;
@@ -16,9 +16,22 @@ type DateofMonthProps = {
 
 
 // COMPONENT TO CONTAIN DATE AND EVENT-LISININGS
-
 const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, setModalOpen, setSelectedDate, setIsEditing }) => {
 	const { eventsArray } = useEventContext();
+	
+	// GET BOOLEAN TO RENDER TODAY STYLE
+	const getIfIsToday = useCallback(()=> {
+		const today = new Date()
+		if(today.getFullYear() === year && today.getMonth() === month && today.getDate() === date) {
+			return true;
+		} else {
+			return false;
+		};
+	}, [date, month, year]);
+
+	const isToday = getIfIsToday();
+
+	// GET THE DAY OF THE WEEK 
 	const dayOfWeek = new Date(year, month, date).getDay();	
 
 	const days = [
@@ -47,8 +60,6 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, 
 	}
 
 	const eventsOfTheDate = getAndSortEvents(eventsArray);
-	 
-
 
 	const handleAddEvent = (year: number, month: number, date: number) => {
 		setModalOpen(true)
@@ -59,7 +70,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, 
 	<div className={`day ${dayClass}`}>
 		    <div className="day-header">
               <div className="week-name">{days[dayOfWeek]}</div>
-              <div className="day-number">{date}</div>
+              <div className={`day-number ${isToday && "today"}`}>{date}</div>
               <button className="add-event-btn" onClick={()=>handleAddEvent(year, month, date)}>+</button>
             </div>
 

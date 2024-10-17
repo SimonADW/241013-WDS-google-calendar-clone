@@ -104,7 +104,7 @@ const AddEventModal = ({
 							value={formValues.name}
 							onChange={handleChange}
 							autoFocus={isEditing === null}
-							
+							required							
 						/>
 					</div>
 
@@ -132,7 +132,8 @@ const AddEventModal = ({
 								id="start-time"
 								value={formValues.startTime}
 								onChange={handleChange}
-							/>
+								disabled={formValues.allDay}
+								/>
 						</div>
 						<div className="form-group">
 							<label htmlFor="end-time">End Time</label>
@@ -142,6 +143,7 @@ const AddEventModal = ({
 								id="end-time"
 								value={formValues.endTime}
 								onChange={handleChange}
+								disabled={formValues.allDay}
 							/>
 						</div>
 					</div>

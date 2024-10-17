@@ -71,13 +71,18 @@ const Calendar = () => {
 		return [daysOfPrevMonth, daysOfMonth, daysOfNextMonth];
 	};
 
-	const [daysOfPrevMonth, daysOfMonth, daysOfNextMonth] =
-		getArrayWithDaysToDisplay();
+	const [daysOfPrevMonth, daysOfMonth, daysOfNextMonth] = getArrayWithDaysToDisplay();
+
+	const handleTodayClick = ()=> {
+		setMonth(new Date().getMonth());
+		setYear(new Date().getFullYear());
+	}
+
 
 	return (
 		<>
 			<div className="header">
-				<button className="btn">Today</button>
+				<button className="btn" onClick={handleTodayClick}>Today</button>
 				<div>
 					<button
 						className="month-change-btn"
