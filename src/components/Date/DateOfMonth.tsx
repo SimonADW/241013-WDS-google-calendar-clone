@@ -1,7 +1,7 @@
 
 import { SelectedDate } from "../Calendar/Calendar";
 import EventListing from "../EventListing/EventListing";
-import { Event } from "../../hooks/useEvent";
+import type { Event } from "../../hooks/useEvent";
 import { useEventContext } from "../../hooks/useEventContext";
 
 type DateofMonthProps = {
@@ -11,12 +11,13 @@ type DateofMonthProps = {
 	dayClass?: string;
 	setModalOpen:  React.Dispatch<React.SetStateAction<boolean>>;
 	setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
+	setIsEditing: React.Dispatch<React.SetStateAction<Event | null>>;
 }
 
 
 // COMPONENT TO CONTAIN DATE AND EVENT-LISININGS
 
-const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, setModalOpen, setSelectedDate }) => {
+const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, setModalOpen, setSelectedDate, setIsEditing }) => {
 	const { eventsArray } = useEventContext();
 	const dayOfWeek = new Date(year, month, date).getDay();	
 
@@ -64,7 +65,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({ year, month, date, dayClass, 
 
 			<div className="events">
 				{eventsOfTheDate.map((event, index) => 
-					<EventListing key={index} event={event} />	
+					<EventListing key={index} event={event} setIsEditing={setIsEditing} setModalOpen={setModalOpen}/>	
 				)}
 			</div>
 	</div>

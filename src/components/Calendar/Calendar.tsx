@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { Event } from "../../hooks/useEvent";
 import DateOfMonth from "../Date/DateOfMonth";
 import AddEventModal from "../AddEventModal/AddEventModal";
 
@@ -9,8 +10,8 @@ const Calendar = () => {
 	const [month, setMonth] = useState(new Date().getMonth());
 	const [year, setYear] = useState<number>(new Date().getFullYear());
 	const [modalOpen, setModalOpen] = useState(false);
+	const [isEditing, setIsEditing] = useState<Event | null>(null);
 	const [selectedDate, setSelectedDate] = useState<SelectedDate>({month, year, date: 1});
-	const [isEditing, setIsEditing] = useState(false);
 
 	const months = [
 		"January",
@@ -104,6 +105,7 @@ const Calendar = () => {
 						dayClass="old-month-day"
 						setModalOpen={setModalOpen}
 						setSelectedDate={setSelectedDate}
+						setIsEditing={setIsEditing}
 					/>
 				))}
 				{daysOfMonth.map((date) => (
@@ -114,6 +116,7 @@ const Calendar = () => {
 						date={date}
 						setModalOpen={setModalOpen}
 						setSelectedDate={setSelectedDate}
+						setIsEditing={setIsEditing}
 					/>
 				))}
 				{daysOfNextMonth.map((date) => (
@@ -125,6 +128,7 @@ const Calendar = () => {
 						dayClass="non-month-day"
 						setModalOpen={setModalOpen}
 						setSelectedDate={setSelectedDate}
+						setIsEditing={setIsEditing}
 					/>
 				))}
 			</div>

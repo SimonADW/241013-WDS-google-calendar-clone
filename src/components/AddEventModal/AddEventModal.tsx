@@ -1,12 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import type { Event } from "../../hooks/useEvent.ts";
 import { SelectedDate } from "../Calendar/Calendar";
 import { useEventContext } from "../../hooks/useEventContext.ts";
 
 type AddEventModalProps = {
 	setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: SelectedDate;
-	isEditing: boolean;
-	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+	isEditing: Event | null;
+	setIsEditing: React.Dispatch<React.SetStateAction<Event | null>>;
 };
 
 const AddEventModal = ({
@@ -25,6 +26,16 @@ const AddEventModal = ({
 		id: Date.now(),
 	});
 	
+	// POPULATE FORM IF EDITING
+	useEffect(()=> {
+	const populateFormIfIsEditing = ()=> {	
+		if(isEditing) {
+			setFormValues(isEditing);
+		} 
+	}
+		populateFormIfIsEditing();		
+	}, [isEditing])
+
 	// GET FUNCTIONS FROM useEvent HOOK
 	const { addEvent, editEvent, deleteEvent } = useEventContext();
 	
@@ -36,13 +47,13 @@ const AddEventModal = ({
 		} else {
 			addEvent(formValues);
 		}
-		setIsEditing(false);
+		setIsEditing(null);
 		setModalOpen(false);
 	};
 
 	const handleDelete = () => {
 		deleteEvent(formValues);
-		setIsEditing(false);
+		setIsEditing(null);
 		setModalOpen(false);
 	};
 
@@ -58,16 +69,26 @@ const AddEventModal = ({
 		[formValues]
 	);
 
+	// HANDLE CLOSE MODAL
+	const handleClose = ()=> {
+		setIsEditing(null);
+		setModalOpen(false);
+	}
+
 	return (
 		<div className="modal">
 			<div className="overlay"></div>
 			<div className="modal-body">
 				<div className="modal-title">
-					<div>Add Event</div>
-					<small>{`${selectedDate.date}/${selectedDate.month}/${selectedDate.year}`}</small>
+					<div>{ isEditing ? "Edit Event" : "Add Event"}</div>
+					<small>{isEditing ? (
+						`${isEditing.date.slice(0, 2)}/${isEditing.date.slice(3,5)}/${isEditing.date.slice(6)}`
+						) : (
+						`${selectedDate.date}/${selectedDate.month}/${selectedDate.year}`)
+					}</small>
 					<button
 						className="close-btn"
-						onClick={() => setModalOpen(false)}
+						onClick={handleClose}
 					>
 						&times;
 					</button>
@@ -82,15 +103,23 @@ const AddEventModal = ({
 							id="name"
 							value={formValues.name}
 							onChange={handleChange}
+							autoFocus={isEditing === null}
+							
 						/>
 					</div>
+
 					<div className="form-group checkbox">
 						<input
 							type="checkbox"
 							name="allDay"
-							id="all-day"
-							value={formValues.allDay.toString()}
-							onChange={handleChange}
+							id="all-day"							
+							checked={formValues.allDay}													
+							onChange={(event)=> {								
+								setFormValues({									
+									...formValues, 
+									allDay: event.target.checked
+								})
+							}}
 						/>
 						<label htmlFor="all-day">All Day?</label>
 					</div>
