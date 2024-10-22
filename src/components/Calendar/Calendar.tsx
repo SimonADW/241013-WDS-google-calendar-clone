@@ -119,6 +119,7 @@ const Calendar = () => {
 						year={year}
 						month={month}
 						date={date}
+						dayClass=""
 						setModalOpen={setModalOpen}
 						setSelectedDate={setSelectedDate}
 						setIsEditing={setIsEditing}

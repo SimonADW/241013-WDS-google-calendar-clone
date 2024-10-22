@@ -17,7 +17,9 @@ const AddEventModal = ({
 	setIsEditing,
 }: AddEventModalProps) => {
 	const [formValues, setFormValues] = useState({
-		date: `${selectedDate.date}/${selectedDate.month + 1}/${selectedDate.year}`,
+		date: `${selectedDate.date}/${selectedDate.month + 1}/${
+			selectedDate.year
+		}`,
 		name: "",
 		allDay: false,
 		startTime: "",
@@ -25,20 +27,21 @@ const AddEventModal = ({
 		color: "blue",
 		id: Date.now(),
 	});
-	
+	const [isClosing, setIsClosing] = useState(false);
+
 	// POPULATE FORM IF EDITING
-	useEffect(()=> {
-	const populateFormIfIsEditing = ()=> {	
-		if(isEditing) {
-			setFormValues(isEditing);
-		} 
-	}
-		populateFormIfIsEditing();		
-	}, [isEditing])
+	useEffect(() => {
+		const populateFormIfIsEditing = () => {
+			if (isEditing) {
+				setFormValues(isEditing);
+			}
+		};
+		populateFormIfIsEditing();
+	}, [isEditing]);
 
 	// GET FUNCTIONS FROM useEvent HOOK
 	const { addEvent, editEvent, deleteEvent } = useEventContext();
-	
+
 	// HANDLE FORM SUBMISSION
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -47,14 +50,12 @@ const AddEventModal = ({
 		} else {
 			addEvent(formValues);
 		}
-		setIsEditing(null);
-		setModalOpen(false);
+		handleClose();
 	};
 
 	const handleDelete = () => {
 		deleteEvent(formValues);
-		setIsEditing(null);
-		setModalOpen(false);
+		handleClose();
 	};
 
 	// HANDLE FORM INPUT CHANGE
@@ -73,50 +74,62 @@ const AddEventModal = ({
 	const validateTime = () => {
 		const startTime = formValues.startTime;
 		const endTime = formValues.endTime;
-	
+
 		if (startTime && endTime) {
-		  const start = new Date(`1970-01-01T${startTime}:00`);
-		  const end = new Date(`1970-01-01T${endTime}:00`);
-		  const endTimeInput = document.getElementById("end-time") as HTMLInputElement | null;
-	
-		  if (endTimeInput) {
-			if (end <= start) {
-			  // SET CUSTOM VALIDITY FOR THE END TIME INPUT IF IT'S INVALID
-			  endTimeInput.setCustomValidity("End time must be after start time.");
-			} else {
-			  // CLEAR CUSTOM VALIDITY IF VALID
-			  endTimeInput.setCustomValidity("");
+			const start = new Date(`1970-01-01T${startTime}:00`);
+			const end = new Date(`1970-01-01T${endTime}:00`);
+			const endTimeInput = document.getElementById(
+				"end-time"
+			) as HTMLInputElement | null;
+
+			if (endTimeInput) {
+				if (end <= start) {
+					// SET CUSTOM VALIDITY FOR THE END TIME INPUT IF IT'S INVALID
+					endTimeInput.setCustomValidity(
+						"End time must be after start time."
+					);
+				} else {
+					// CLEAR CUSTOM VALIDITY IF VALID
+					endTimeInput.setCustomValidity("");
+				}
 			}
-		  }
 		}
-	  };
+	};
 
-	  const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		handleChange(event)
-		validateTime()
-	  }
+	const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		handleChange(event);
+		validateTime();
+	};
 
+	//   @TODO: FIX CLOSING ANIMATION
 	// HANDLE CLOSE MODAL
-	const handleClose = ()=> {
-		setIsEditing(null);
-		setModalOpen(false);
+	function handleClose() {
+		setIsClosing(true);
+		setTimeout(() => {
+			setIsEditing(null);
+			setModalOpen(false);
+			setIsClosing(false);
+		}, 1000);
 	}
 
 	return (
-		<div className="modal">
+		<div className={`modal ${isClosing ? "closing" : ""}`}>
 			<div className="overlay"></div>
 			<div className="modal-body">
 				<div className="modal-title">
-					<div>{ isEditing ? "Edit Event" : "Add Event"}</div>
-					<small>{isEditing ? (
-						`${isEditing.date.slice(0, 2)}/${isEditing.date.slice(3,5)}/${isEditing.date.slice(6)}`
-						) : (
-						`${selectedDate.date}/${selectedDate.month}/${selectedDate.year}`)
-					}</small>
-					<button
-						className="close-btn"
-						onClick={handleClose}
-					>
+					<div>{isEditing ? "Edit Event" : "Add Event"}</div>
+					<small>
+						{isEditing
+							? `${isEditing.date.slice(
+									0,
+									2
+							  )}/${isEditing.date.slice(
+									3,
+									5
+							  )}/${isEditing.date.slice(6)}`
+							: `${selectedDate.date}/${selectedDate.month}/${selectedDate.year}`}
+					</small>
+					<button className="close-btn" onClick={handleClose}>
 						&times;
 					</button>
 				</div>
@@ -131,7 +144,7 @@ const AddEventModal = ({
 							value={formValues.name}
 							onChange={handleChange}
 							autoFocus={isEditing === null}
-							required							
+							required
 						/>
 					</div>
 
@@ -139,13 +152,13 @@ const AddEventModal = ({
 						<input
 							type="checkbox"
 							name="allDay"
-							id="all-day"							
-							checked={formValues.allDay}													
-							onChange={(event)=> {								
-								setFormValues({									
-									...formValues, 
-									allDay: event.target.checked
-								})
+							id="all-day"
+							checked={formValues.allDay}
+							onChange={(event) => {
+								setFormValues({
+									...formValues,
+									allDay: event.target.checked,
+								});
 							}}
 						/>
 						<label htmlFor="all-day">All Day?</label>
@@ -158,11 +171,10 @@ const AddEventModal = ({
 								name="startTime"
 								id="start-time"
 								value={formValues.startTime}
-								onChange={(e)=>handleTimeChange(e)}
+								onChange={(e) => handleTimeChange(e)}
 								disabled={formValues.allDay}
 								required={!isEditing}
-								
-								/>
+							/>
 						</div>
 						<div className="form-group">
 							<label htmlFor="end-time">End Time</label>
@@ -171,10 +183,9 @@ const AddEventModal = ({
 								name="endTime"
 								id="end-time"
 								value={formValues.endTime}
-								onChange={(e)=>handleTimeChange(e)}
+								onChange={(e) => handleTimeChange(e)}
 								disabled={formValues.allDay}
 								required={!isEditing}
-
 							/>
 						</div>
 					</div>

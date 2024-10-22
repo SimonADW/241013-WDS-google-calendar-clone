@@ -12,7 +12,7 @@
   --red-background: hsl(0, 75%, 60%);
   --green-background: hsl(150, 80%, 30%);
   --border-color: #dadce0;
-  --border-size: 1px;
+  --border-size: 1.25px;
   --day-padding: 0.25rem;
 }
 
@@ -24,6 +24,8 @@ body {
   height: 100vh;
   max-width: 1500px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendar {
@@ -332,7 +334,7 @@ body {
 
 .modal.closing .modal-body {
   animation: pop-in 250ms forwards reverse;
-}
+} 
 
 @keyframes pop-in {
   100% {
