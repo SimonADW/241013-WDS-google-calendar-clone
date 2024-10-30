@@ -27,7 +27,6 @@ const Calendar = () => {
 		"November",
 		"December",
 	];
-
 	
 	// FUNCTION TO HANDLE MONTH CHANGE BUTTONS
 	const handleMonthChange = (direction: number) => {
@@ -110,6 +109,7 @@ const Calendar = () => {
 						date={date}
 						dayClass="old-month-day"
 						setModalOpen={setModalOpen}
+						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
 						setIsEditing={setIsEditing}
 					/>
@@ -122,6 +122,7 @@ const Calendar = () => {
 						date={date}
 						dayClass=""
 						setModalOpen={setModalOpen}
+						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
 						setIsEditing={setIsEditing}
 					/>
@@ -134,6 +135,7 @@ const Calendar = () => {
 						date={date}
 						dayClass="non-month-day"
 						setModalOpen={setModalOpen}
+						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
 						setIsEditing={setIsEditing}
 					/>

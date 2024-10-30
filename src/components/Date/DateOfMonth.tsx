@@ -3,6 +3,7 @@ import EventListing from "../EventListing/EventListing";
 import type { Event } from "../../hooks/useEvent";
 import { useEventContext } from "../../hooks/useEventContext";
 import { useCallback, useEffect, useRef, useState } from "react";
+import MultipleEventsModal from "../MultipleEventsModal/MultipleEventsModal";
 
 type DateofMonthProps = {
 	year: number;
@@ -10,6 +11,7 @@ type DateofMonthProps = {
 	date: number;
 	dayClass?: string;
 	setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	selectedDate: SelectedDate;
 	setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
 	setIsEditing: React.Dispatch<React.SetStateAction<Event | null>>;
 };
@@ -21,6 +23,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 	date,
 	dayClass,
 	setModalOpen,
+	selectedDate,
 	setSelectedDate,
 	setIsEditing,
 }) => {
@@ -33,6 +36,8 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		getNumOfEventsToFitDate()
 	);
 	const [eventsOverflowed, setEventsOverFlowed] = useState(0);
+	const [multipleEventsModalOpen, setMultipleEventsModalOpen] =
+		useState(false);		
 
 	// GET BOOLEAN TO RENDER TODAY STYLE
 	const getIfIsToday = useCallback(() => {
@@ -105,21 +110,27 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		};
 
 		limitEventsToDisplay();
-	}, [eventsArray, eventsToFitDate, month]);
+	}, [eventsArray, eventsToFitDate, month, year]);
 
 	// GET EVENTS OF THE DAY
 	function getAndSortEvents(eventsArray: Event[]) {
 		const eventsOfTheDate: Event[] = eventsArray.filter((event: Event) => {
-			const [eventDay, eventMonth, eventYear] = event.date.split('/').map(Number);
-			return eventYear === year && eventMonth - 1 === month && eventDay === date;
+			const [eventDay, eventMonth, eventYear] = event.date
+				.split("/")
+				.map(Number);
+			return (
+				eventYear === year &&
+				eventMonth - 1 === month &&
+				eventDay === date
+			);
 		});
-	
+
 		const sortedEventsArray = eventsOfTheDate.sort(
 			(a, b) =>
 				Number(a.startTime.replace(":", "")) -
 				Number(b.startTime.replace(":", ""))
 		);
-	
+
 		return sortedEventsArray;
 	}
 
@@ -127,40 +138,59 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		setModalOpen(true);
 		setSelectedDate({ year, month, date });
 	};
+	
+	const handleViewMore = ()=> {
+		setSelectedDate({ year, month, date });
+		setMultipleEventsModalOpen(true)
+	}
 
 	return (
-		<div ref={dateRef} className={`day ${dayClass}`}>
-			<div className="day-header">
-				<div className="week-name">{days[dayOfWeek]}</div>
-				<div className={`day-number ${isToday ? "today" : ""}`}>
-					{date}
+		<>
+			<div ref={dateRef} className={`day ${dayClass}`}>
+				<div className="day-header">
+					<div className="week-name">{days[dayOfWeek]}</div>
+					<div className={`day-number ${isToday ? "today" : ""}`}>
+						{date}
+					</div>
+					<button
+						className="add-event-btn"
+						onClick={() => handleAddEvent(year, month, date)}
+					>
+						+
+					</button>
 				</div>
-				<button
-					className="add-event-btn"
-					onClick={() => handleAddEvent(year, month, date)}
-				>
-					+
-				</button>
-			</div>
 
-			<div className="events">
-				{eventsToDisplay.map((event, index) => (
-					<EventListing
-						key={index}
-						event={event}
-						setIsEditing={setIsEditing}
-						setModalOpen={setModalOpen}
-					/>
-				))}
+				<div className="events">
+					{eventsToDisplay.map((event, index) => (
+						<EventListing
+							key={index}
+							event={event}
+							setIsEditing={setIsEditing}
+							setModalOpen={setModalOpen}
+						/>
+					))}
+				</div>
+				{eventsOverflowed ? (
+					<button
+						className="events-view-more-btn"
+						onClick={() => handleViewMore()}
+					>
+						+ {eventsOverflowed} more
+					</button>
+				) : (
+					""
+				)}
 			</div>
-			{eventsOverflowed ? (
-				<button className="events-view-more-btn">
-					+ {eventsOverflowed} more
-				</button>
-			) : (
-				""
+			{multipleEventsModalOpen && (
+				<MultipleEventsModal
+					eventsOfTheDay={getAndSortEvents(eventsArray)}
+					setModalOpen={setModalOpen}
+					setMultipleEventsModalOpen={setMultipleEventsModalOpen}
+					setIsEditing={setIsEditing}
+					selectedDate={selectedDate}
+				/>
 			)}
-		</div>
+		</>
 	);
 };
 
