@@ -28,6 +28,7 @@ const Calendar = () => {
 		"December",
 	];
 
+	
 	// FUNCTION TO HANDLE MONTH CHANGE BUTTONS
 	const handleMonthChange = (direction: number) => {
 		if (month === 0 && direction === -1) {
@@ -104,8 +105,8 @@ const Calendar = () => {
 				{daysOfPrevMonth.map((date) => (
 					<DateOfMonth
 						key={date}
-						year={year}
-						month={month}
+						year={month === 0 ? year - 1 : year} // previous year if January
+						month={month === 0 ? 11 : month - 1} // December if January
 						date={date}
 						dayClass="old-month-day"
 						setModalOpen={setModalOpen}
@@ -128,8 +129,8 @@ const Calendar = () => {
 				{daysOfNextMonth.map((date) => (
 					<DateOfMonth
 						key={date}
-						year={year}
-						month={month}
+						year={(month > 11 ) ? year +1: year} // Next year if December
+						month={month === 11 ? 0 : month + 1} // Jan if December
 						date={date}
 						dayClass="non-month-day"
 						setModalOpen={setModalOpen}

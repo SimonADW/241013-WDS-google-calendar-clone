@@ -29,7 +29,9 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		getAndSortEvents(eventsArray)
 	);
 	const dateRef = useRef<HTMLDivElement | null>(null);
-	const [eventsToFitDate, setEventsToFitDate] = useState<number>(getNumOfEventsToFitDate());
+	const [eventsToFitDate, setEventsToFitDate] = useState<number>(
+		getNumOfEventsToFitDate()
+	);
 	const [eventsOverflowed, setEventsOverFlowed] = useState(0);
 
 	// GET BOOLEAN TO RENDER TODAY STYLE
@@ -68,58 +70,56 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		if (dateRef.current) {
 			currentHeight = dateRef.current.offsetHeight;
 			const eventHeight = 24;
-			eventsToFit = Math.floor(
-				currentHeight / (eventHeight + 16)
-			);		
-		}		
-		return eventsToFit
+			eventsToFit = Math.floor(currentHeight / (eventHeight + 16));
+		}
+		return eventsToFit;
 	}
 
 	useEffect(() => {
-		const getAndSetNumOfEventPrDate = () => {			    
-				if (getNumOfEventsToFitDate() !== eventsToFitDate) {					
-					setEventsToFitDate(getNumOfEventsToFitDate());
-				}				
+		const getAndSetNumOfEventPrDate = () => {
+			if (getNumOfEventsToFitDate() !== eventsToFitDate) {
+				setEventsToFitDate(getNumOfEventsToFitDate());
+			}
 		};
 
 		getAndSetNumOfEventPrDate();
 		window.addEventListener("resize", getAndSetNumOfEventPrDate);
 
-		return () => window.removeEventListener("resize", getAndSetNumOfEventPrDate);
+		return () =>
+			window.removeEventListener("resize", getAndSetNumOfEventPrDate);
 	}, [eventsToFitDate]);
-
 
 	// LIMIT EVENTS TO DISPLAY TO AVOID OVERFLOW
 	useEffect(() => {
 		const limitEventsToDisplay = () => {
 			let eventsOfTheDate = getAndSortEvents(eventsArray);
 			if (eventsOfTheDate.length > eventsToFitDate) {
-				setEventsOverFlowed(eventsOfTheDate.length - (eventsToFitDate + 1));				
+				setEventsOverFlowed(
+					eventsOfTheDate.length - (eventsToFitDate + 1)
+				);
 				eventsOfTheDate = eventsOfTheDate.slice(0, eventsToFitDate);
 			} else {
 				setEventsOverFlowed(0);
-			}			
+			}
 			setEventsToDisplay(eventsOfTheDate);
 		};
 
 		limitEventsToDisplay();
-	}, [eventsArray, eventsToFitDate]);
-
-
+	}, [eventsArray, eventsToFitDate, month]);
 
 	// GET EVENTS OF THE DAY
 	function getAndSortEvents(eventsArray: Event[]) {
 		const eventsOfTheDate: Event[] = eventsArray.filter((event: Event) => {
-			const eventDate = new Date(year, month, date).toLocaleDateString();
-			return eventDate === event.date;
+			const [eventDay, eventMonth, eventYear] = event.date.split('/').map(Number);
+			return eventYear === year && eventMonth - 1 === month && eventDay === date;
 		});
-
+	
 		const sortedEventsArray = eventsOfTheDate.sort(
 			(a, b) =>
 				Number(a.startTime.replace(":", "")) -
 				Number(b.startTime.replace(":", ""))
 		);
-
+	
 		return sortedEventsArray;
 	}
 
@@ -132,7 +132,9 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		<div ref={dateRef} className={`day ${dayClass}`}>
 			<div className="day-header">
 				<div className="week-name">{days[dayOfWeek]}</div>
-				<div className={`day-number ${isToday && "today"}`}>{date}</div>
+				<div className={`day-number ${isToday ? "today" : ""}`}>
+					{date}
+				</div>
 				<button
 					className="add-event-btn"
 					onClick={() => handleAddEvent(year, month, date)}
