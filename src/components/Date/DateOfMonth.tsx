@@ -28,11 +28,9 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 	const [eventsToDisplay, setEventsToDisplay] = useState(
 		getAndSortEvents(eventsArray)
 	);
-	const [eventsToFitDate, setEventsToFitDate] = useState<number>(
-		eventsArray.length
-	);
-	const [eventsOverflowed, setEventsOverFlowed] = useState(0);
 	const dateRef = useRef<HTMLDivElement | null>(null);
+	const [eventsToFitDate, setEventsToFitDate] = useState<number>(getNumOfEventsToFitDate());
+	const [eventsOverflowed, setEventsOverFlowed] = useState(0);
 
 	// GET BOOLEAN TO RENDER TODAY STYLE
 	const getIfIsToday = useCallback(() => {
@@ -63,43 +61,51 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		"Saturday",
 	];
 
+	// CALCULATE EVENTS TO FIT IN DATE SQUARE
+	function getNumOfEventsToFitDate(): number {
+		let currentHeight;
+		let eventsToFit = 0;
+		if (dateRef.current) {
+			currentHeight = dateRef.current.offsetHeight;
+			const eventHeight = 24;
+			eventsToFit = Math.floor(
+				currentHeight / (eventHeight + 16)
+			);		
+		}		
+		return eventsToFit
+	}
+
+	useEffect(() => {
+		const getAndSetNumOfEventPrDate = () => {			    
+				if (getNumOfEventsToFitDate() !== eventsToFitDate) {					
+					setEventsToFitDate(getNumOfEventsToFitDate());
+				}				
+		};
+
+		getAndSetNumOfEventPrDate();
+		window.addEventListener("resize", getAndSetNumOfEventPrDate);
+
+		return () => window.removeEventListener("resize", getAndSetNumOfEventPrDate);
+	}, [eventsToFitDate]);
+
+
 	// LIMIT EVENTS TO DISPLAY TO AVOID OVERFLOW
 	useEffect(() => {
 		const limitEventsToDisplay = () => {
 			let eventsOfTheDate = getAndSortEvents(eventsArray);
-			if (eventsOfTheDate.length - eventsToFitDate > 0) {
-				setEventsOverFlowed(eventsOfTheDate.length - eventsToFitDate);
+			if (eventsOfTheDate.length > eventsToFitDate) {
+				setEventsOverFlowed(eventsOfTheDate.length - (eventsToFitDate + 1));				
 				eventsOfTheDate = eventsOfTheDate.slice(0, eventsToFitDate);
-			}
+			} else {
+				setEventsOverFlowed(0);
+			}			
 			setEventsToDisplay(eventsOfTheDate);
 		};
 
 		limitEventsToDisplay();
 	}, [eventsArray, eventsToFitDate]);
 
-	// CALCULATE EVENTS TO FIT IN DATE SQUARE
-	useEffect(() => {
-		let currentHeight;
-		const getDateSquareHeight = () => {
-			if (dateRef.current) {
-				currentHeight = dateRef.current.offsetHeight;
-				const eventHeight = 24;
-				const eventsToFit = Math.floor(
-					currentHeight / (eventHeight + 16)
-				);
-				// TODO: RERENDERS ON EVERY RESIZE!!
-				if (eventsToFit !== eventsToFitDate) {
-					console.log(eventsToFit);
-					setEventsToFitDate(eventsToFit);
-				}
-			}
-		};
 
-		getDateSquareHeight();
-		window.addEventListener("resize", getDateSquareHeight);
-
-		return () => window.removeEventListener("resize", getDateSquareHeight);
-	}, []);
 
 	// GET EVENTS OF THE DAY
 	function getAndSortEvents(eventsArray: Event[]) {
