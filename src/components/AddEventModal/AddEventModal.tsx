@@ -3,6 +3,7 @@ import type { Event } from "../../hooks/useEvent.ts";
 import { SelectedDate } from "../Calendar/Calendar";
 import { useEventContext } from "../../hooks/useEventContext.ts";
 
+
 type AddEventModalProps = {
 	setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: SelectedDate;
@@ -10,6 +11,7 @@ type AddEventModalProps = {
 	setIsEditing: React.Dispatch<React.SetStateAction<Event | null>>;
 };
 
+// MODAL TO ADD, EDIT OR DELETE EVENT
 const AddEventModal = ({
 	setModalOpen,
 	selectedDate,
@@ -39,8 +41,9 @@ const AddEventModal = ({
 		populateFormIfIsEditing();
 	}, [isEditing]);
 
-	// GET FUNCTIONS FROM useEvent HOOK
+	// GET FUNCTIONS FROM useEventContext HOOK
 	const { addEvent, editEvent, deleteEvent } = useEventContext();
+	
 
 	// HANDLE FORM SUBMISSION
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,6 +115,9 @@ const AddEventModal = ({
 		}, 1000);
 	}
 
+	// GET DATE FOR THE EDIT-MODAL
+	const [day, month, year] = isEditing ? isEditing.date.split("/") : ["", "", ""];
+
 	return (
 		<div className={`modal ${isClosing ? "closing" : ""}`}>
 			<div className="overlay"></div>
@@ -120,13 +126,7 @@ const AddEventModal = ({
 					<div>{isEditing ? "Edit Event" : "Add Event"}</div>
 					<small>
 						{isEditing
-							? `${isEditing.date.slice(
-									0,
-									2
-							  )}/${isEditing.date.slice(
-									3,
-									5
-							  )}/${isEditing.date.slice(6)}`
+							? `${day}/${month}/${year}`
 							: `${selectedDate.date}/${selectedDate.month}/${selectedDate.year}`}
 					</small>
 					<button className="close-btn" onClick={handleClose}>

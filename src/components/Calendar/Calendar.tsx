@@ -76,8 +76,7 @@ const Calendar = () => {
 	const handleTodayClick = ()=> {
 		setMonth(new Date().getMonth());
 		setYear(new Date().getFullYear());
-	}
-
+	}	
 
 	return (
 		<>
@@ -101,7 +100,7 @@ const Calendar = () => {
 			</div>
 
 			<div className="days">
-				{daysOfPrevMonth.map((date) => (
+				{daysOfPrevMonth.map((date) => (					
 					<DateOfMonth
 						key={date}
 						year={month === 0 ? year - 1 : year} // previous year if January
@@ -111,7 +110,7 @@ const Calendar = () => {
 						setModalOpen={setModalOpen}
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
-						setIsEditing={setIsEditing}
+						setIsEditing={setIsEditing}						
 					/>
 				))}
 				{daysOfMonth.map((date) => (

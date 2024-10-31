@@ -11,15 +11,14 @@ type MultipleEventsModalProps = {
 	selectedDate: SelectedDate;
 };
 
+// MODAL TO DISPLAY WHEN "+1 more" IS CLICKED (WHEN DATE IS OVERFLOWED)
 const MultipleEventsModal = ({
 	eventsOfTheDay,
 	setModalOpen,
 	setMultipleEventsModalOpen,
 	selectedDate,
 	setIsEditing,
-}: MultipleEventsModalProps) => {
-	console.log(selectedDate);
-	
+}: MultipleEventsModalProps) => {	
 	const { date, month, year } = selectedDate;
 	
 	return (
@@ -43,7 +42,6 @@ const MultipleEventsModal = ({
 							event={event}
 							setIsEditing={setIsEditing}
 							setModalOpen={setModalOpen}
-							setMultipleEventsModalOpen={setMultipleEventsModalOpen}
 						/>
 					))}
 				</div>

@@ -16,6 +16,31 @@ type DateofMonthProps = {
 	setIsEditing: React.Dispatch<React.SetStateAction<Event | null>>;
 };
 
+// GET EVENTS OF THE DAY ( Declared outside to be accessible in state declaration. "Hoisted outside")
+function getAndSortEvents(
+	eventsArray: Event[],
+	year: number,
+	month: number,
+	date: number
+) {
+	const eventsOfTheDate: Event[] = eventsArray.filter((event: Event) => {
+		const [eventDay, eventMonth, eventYear] = event.date
+			.split("/")
+			.map(Number);
+		return (
+			eventYear === year && eventMonth - 1 === month && eventDay === date
+		);
+	});
+
+	const sortedEventsArray = eventsOfTheDate.sort(
+		(a, b) =>
+			Number(a.startTime.replace(":", "")) -
+			Number(b.startTime.replace(":", ""))
+	);
+
+	return sortedEventsArray;
+}
+
 // COMPONENT TO CONTAIN DATE AND EVENT-LISININGS
 const DateOfMonth: React.FC<DateofMonthProps> = ({
 	year,
@@ -29,7 +54,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 }) => {
 	const { eventsArray } = useEventContext();
 	const [eventsToDisplay, setEventsToDisplay] = useState(
-		getAndSortEvents(eventsArray)
+		getAndSortEvents(eventsArray, year, month, date)
 	);
 	const dateRef = useRef<HTMLDivElement | null>(null);
 	const [eventsToFitDate, setEventsToFitDate] = useState<number>(
@@ -37,7 +62,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 	);
 	const [eventsOverflowed, setEventsOverFlowed] = useState(0);
 	const [multipleEventsModalOpen, setMultipleEventsModalOpen] =
-		useState(false);		
+		useState(false);
 
 	// GET BOOLEAN TO RENDER TODAY STYLE
 	const getIfIsToday = useCallback(() => {
@@ -52,12 +77,10 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 			return false;
 		}
 	}, [date, month, year]);
-
 	const isToday = getIfIsToday();
 
 	// GET THE DAY OF THE WEEK
 	const dayOfWeek = new Date(year, month, date).getDay();
-
 	const days = [
 		"Sunday",
 		"Monday",
@@ -80,6 +103,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		return eventsToFit;
 	}
 
+	// UPDATE NUMBER OF EVENTS THAT FIT, ON RESIZE
 	useEffect(() => {
 		const getAndSetNumOfEventPrDate = () => {
 			if (getNumOfEventsToFitDate() !== eventsToFitDate) {
@@ -97,7 +121,12 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 	// LIMIT EVENTS TO DISPLAY TO AVOID OVERFLOW
 	useEffect(() => {
 		const limitEventsToDisplay = () => {
-			let eventsOfTheDate = getAndSortEvents(eventsArray);
+			let eventsOfTheDate = getAndSortEvents(
+				eventsArray,
+				year,
+				month,
+				date
+			);
 			if (eventsOfTheDate.length > eventsToFitDate) {
 				setEventsOverFlowed(
 					eventsOfTheDate.length - (eventsToFitDate + 1)
@@ -110,39 +139,18 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 		};
 
 		limitEventsToDisplay();
-	}, [eventsArray, eventsToFitDate, month, year]);
+	}, [eventsArray, eventsToFitDate, month, year, date]);
 
-	// GET EVENTS OF THE DAY
-	function getAndSortEvents(eventsArray: Event[]) {
-		const eventsOfTheDate: Event[] = eventsArray.filter((event: Event) => {
-			const [eventDay, eventMonth, eventYear] = event.date
-				.split("/")
-				.map(Number);
-			return (
-				eventYear === year &&
-				eventMonth - 1 === month &&
-				eventDay === date
-			);
-		});
-
-		const sortedEventsArray = eventsOfTheDate.sort(
-			(a, b) =>
-				Number(a.startTime.replace(":", "")) -
-				Number(b.startTime.replace(":", ""))
-		);
-
-		return sortedEventsArray;
-	}
-
+	// HANDLERS
 	const handleAddEvent = (year: number, month: number, date: number) => {
 		setModalOpen(true);
 		setSelectedDate({ year, month, date });
 	};
-	
-	const handleViewMore = ()=> {
+
+	const handleViewMore = () => {
 		setSelectedDate({ year, month, date });
-		setMultipleEventsModalOpen(true)
-	}
+		setMultipleEventsModalOpen(true);
+	};
 
 	return (
 		<>
@@ -161,6 +169,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 				</div>
 
 				<div className="events">
+					{/* RENDER EVENTS ON DATE */}
 					{eventsToDisplay.map((event, index) => (
 						<EventListing
 							key={index}
@@ -170,6 +179,8 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 						/>
 					))}
 				</div>
+
+				{/* DISPLAY "+ 1 more" WHEN DATE IS OVERFLOWED */}
 				{eventsOverflowed ? (
 					<button
 						className="events-view-more-btn"
@@ -181,9 +192,16 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 					""
 				)}
 			</div>
+
+			{/* MODAL TO DISPLAY WHEN "+1 more" IS CLICKED (WHEN DATE IS OVERFLOWED) */}
 			{multipleEventsModalOpen && (
 				<MultipleEventsModal
-					eventsOfTheDay={getAndSortEvents(eventsArray)}
+					eventsOfTheDay={getAndSortEvents(
+						eventsArray,
+						year,
+						month,
+						date
+					)}
 					setModalOpen={setModalOpen}
 					setMultipleEventsModalOpen={setMultipleEventsModalOpen}
 					setIsEditing={setIsEditing}

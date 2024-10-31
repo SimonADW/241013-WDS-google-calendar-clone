@@ -22,7 +22,7 @@ export type UseEventTypes = {
 	deleteEvent: DeleteEvent
 };
 
-
+// CUSTOM HOOK TO STORE AND PROVIDE CALENDAR-EVENTS AND CALENDAR-EVENTS FUNCTIONS
 const useEvent = (): UseEventTypes => {
 	const [eventsArray, setEventsArray] = useState<Event[]>(() => {
 		const storedEvents = window.localStorage.getItem("calendarEvents");
