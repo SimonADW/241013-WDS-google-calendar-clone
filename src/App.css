@@ -143,6 +143,13 @@ body {
   padding: var(--border-size);
 }
 
+.weekname-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  justify-items: center;
+  padding: 0.3rem; 
+}
+
 .day {
   background-color: white;
   padding: var(--day-padding);
@@ -172,7 +179,7 @@ body {
   text-transform: uppercase;
   font-size: 0.75rem;
   font-weight: bold;
-  color: #777;
+  color: #777;  
 }
 
 .day-number {

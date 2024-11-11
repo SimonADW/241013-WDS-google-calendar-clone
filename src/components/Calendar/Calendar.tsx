@@ -80,7 +80,7 @@ const Calendar = () => {
 	const handleTodayClick = ()=> {
 		setMonth(new Date().getMonth());
 		setYear(new Date().getFullYear());
-	}	
+	}
 
 	return (
 		<>
@@ -103,7 +103,16 @@ const Calendar = () => {
 				<span className="month-title">{`${months[month]} ${year}`}</span>
 			</div>
 
-			<div className="days">				
+				<div className="weekname-row">
+					<div className="week-name">Monday</div>			
+					<div className="week-name">Tuesday</div>
+					<div className="week-name">Wednesday</div>
+					<div className="week-name">Thursday</div>
+					<div className="week-name">Friday</div>
+					<div className="week-name">Saturday</div>
+					<div className="week-name">Sunday</div>
+				</div>
+			<div className="days">	
 				{daysOfPrevMonth.map((date) => (					
 					<DateOfMonth
 						key={date}

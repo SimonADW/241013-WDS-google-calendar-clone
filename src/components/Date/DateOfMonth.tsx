@@ -79,18 +79,6 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 	}, [date, month, year]);
 	const isToday = getIfIsToday();
 
-	// GET THE DAY OF THE WEEK
-	const dayOfWeek = new Date(year, month, date).getDay();
-	const days = [
-		"Sunday",
-		"Monday",
-		"Tuesday",
-		"Wednesday",
-		"Thursday",
-		"Friday",
-		"Saturday",
-	];
-
 	// CALCULATE EVENTS TO FIT IN DATE SQUARE
 	function getNumOfEventsToFitDate(): number {
 		let currentHeight;
@@ -155,8 +143,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 	return (
 		<>
 			<div ref={dateRef} className={`day ${dayClass}`}>
-				<div className="day-header">
-					<div className="week-name">{days[dayOfWeek]}</div>
+				<div className="day-header">					
 					<div className={`day-number ${isToday ? "today" : ""}`}>
 						{date}
 					</div>
