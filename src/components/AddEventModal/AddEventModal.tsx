@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Event } from "../../hooks/useEvent.ts";
 import { SelectedDate } from "../Calendar/Calendar";
 import { useEventContext } from "../../hooks/useEventContext.ts";
 
 
 type AddEventModalProps = {
+	modalOpen: boolean;
 	setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: SelectedDate;
 	isEditing: Event | null;
@@ -13,10 +14,11 @@ type AddEventModalProps = {
 
 // MODAL TO ADD, EDIT OR DELETE EVENT
 const AddEventModal = ({
+	modalOpen,
 	setModalOpen,
 	selectedDate,
 	isEditing,
-	setIsEditing,
+	setIsEditing,	
 }: AddEventModalProps) => {
 	const [formValues, setFormValues] = useState({
 		date: `${selectedDate.date}/${selectedDate.month + 1}/${
@@ -30,6 +32,7 @@ const AddEventModal = ({
 		id: Date.now(),
 	});
 	const [isClosing, setIsClosing] = useState(false);
+	const prevIsOpen = useRef<boolean>();
 
 	// POPULATE FORM IF EDITING
 	useEffect(() => {
@@ -104,15 +107,17 @@ const AddEventModal = ({
 		validateTime();
 	};
 
-	//   @TODO: FIX CLOSING ANIMATION
-	// HANDLE CLOSE MODAL
+	// @TODO: FIX CLOSING ANIMATION
+	// HANDLE CLOSE MODAL	
 	function handleClose() {
 		setIsClosing(true);
-		setTimeout(() => {
+		const closingTimeout = setTimeout(() => {
 			setIsEditing(null);
 			setModalOpen(false);
 			setIsClosing(false);
 		}, 1000);
+
+		return () => clearTimeout(closingTimeout);		
 	}
 
 	// GET DATE FOR THE EDIT-MODAL
@@ -120,7 +125,7 @@ const AddEventModal = ({
 
 	return (
 		<div className={`modal ${isClosing ? "closing" : ""}`}>
-			<div className="overlay"></div>
+			<div className="overlay" onClick={handleClose}></div>
 			<div className="modal-body">
 				<div className="modal-title">
 					<div>{isEditing ? "Edit Event" : "Add Event"}</div>

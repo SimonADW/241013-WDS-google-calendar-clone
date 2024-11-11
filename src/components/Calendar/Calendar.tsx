@@ -53,6 +53,8 @@ const Calendar = () => {
 		let lastDateOfPrevMonth = new Date(year, month, 0).getDate();
 		for (let i = lastDayOfPrevMonth; i > 0; i--) {
 			daysOfPrevMonth.push(lastDateOfPrevMonth);
+			// START WEEK FROM SUNDAY
+			daysOfPrevMonth.reverse();
 			lastDateOfPrevMonth--;
 		}
 
@@ -66,6 +68,8 @@ const Calendar = () => {
 		const daysOfNextMonth = [];
 		for (let i = 1; i <= 7 - lastDayOfMonth; i++) {
 			daysOfNextMonth.push(i);
+			// START WEEK FROM SUNDAY
+			daysOfNextMonth.reverse();
 		}
 
 		return [daysOfPrevMonth, daysOfMonth, daysOfNextMonth];
@@ -99,7 +103,7 @@ const Calendar = () => {
 				<span className="month-title">{`${months[month]} ${year}`}</span>
 			</div>
 
-			<div className="days">
+			<div className="days">				
 				{daysOfPrevMonth.map((date) => (					
 					<DateOfMonth
 						key={date}
@@ -143,6 +147,7 @@ const Calendar = () => {
 
 			{modalOpen && (
 				<AddEventModal
+					modalOpen={modalOpen}
 					setModalOpen={setModalOpen}
 					selectedDate={selectedDate}
 					isEditing={isEditing}
