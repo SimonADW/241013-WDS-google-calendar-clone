@@ -2,6 +2,7 @@ import React from "react";
 import { Event } from "../../hooks/useEvent";
 import EventListing from "../EventListing/EventListing";
 import { SelectedDate } from "../Calendar/Calendar";
+import { createPortal } from "react-dom";
 
 type MultipleEventsModalProps = {
 	eventsOfTheDay: Event[];
@@ -18,15 +19,15 @@ const MultipleEventsModal = ({
 	setMultipleEventsModalOpen,
 	selectedDate,
 	setIsEditing,
-}: MultipleEventsModalProps) => {	
+}: MultipleEventsModalProps) => {
 	const { date, month, year } = selectedDate;
-	
-	return (
+
+	return createPortal(
 		<div className="modal">
 			<div className="overlay"></div>
 			<div className="modal-body">
 				<div className="modal-title">
-					{`${date}/${month}/${year}`}					
+					{`${date}/${month}/${year}`}
 					<button
 						className="close-btn"
 						onClick={() => setMultipleEventsModalOpen(false)}
@@ -46,7 +47,8 @@ const MultipleEventsModal = ({
 					))}
 				</div>
 			</div>
-		</div>
+		</div>,
+		document.querySelector(".days") as HTMLElement
 	);
 };
 
