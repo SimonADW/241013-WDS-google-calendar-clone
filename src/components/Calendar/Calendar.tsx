@@ -156,7 +156,6 @@ const Calendar = () => {
 
 			{modalOpen && (
 				<AddEventModal
-					modalOpen={modalOpen}
 					setModalOpen={setModalOpen}
 					selectedDate={selectedDate}
 					isEditing={isEditing}

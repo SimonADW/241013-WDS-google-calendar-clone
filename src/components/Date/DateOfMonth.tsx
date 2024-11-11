@@ -117,7 +117,7 @@ const DateOfMonth: React.FC<DateofMonthProps> = ({
 			);
 			if (eventsOfTheDate.length > eventsToFitDate) {
 				setEventsOverFlowed(
-					eventsOfTheDate.length - (eventsToFitDate + 1)
+					eventsOfTheDate.length - (eventsToFitDate)
 				);
 				eventsOfTheDate = eventsOfTheDate.slice(0, eventsToFitDate);
 			} else {

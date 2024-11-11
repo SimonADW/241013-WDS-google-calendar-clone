@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import type { Event } from "../../hooks/useEvent.ts";
 import { SelectedDate } from "../Calendar/Calendar";
 import { useEventContext } from "../../hooks/useEventContext.ts";
 
 
-type AddEventModalProps = {
-	modalOpen: boolean;
+type AddEventModalProps = {	
 	setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	selectedDate: SelectedDate;
 	isEditing: Event | null;
@@ -14,7 +13,6 @@ type AddEventModalProps = {
 
 // MODAL TO ADD, EDIT OR DELETE EVENT
 const AddEventModal = ({
-	modalOpen,
 	setModalOpen,
 	selectedDate,
 	isEditing,
@@ -32,7 +30,6 @@ const AddEventModal = ({
 		id: Date.now(),
 	});
 	const [isClosing, setIsClosing] = useState(false);
-	const prevIsOpen = useRef<boolean>();
 
 	// POPULATE FORM IF EDITING
 	useEffect(() => {
@@ -131,7 +128,7 @@ const AddEventModal = ({
 					<div>{isEditing ? "Edit Event" : "Add Event"}</div>
 					<small>
 						{isEditing
-							? `${day}/${month}/${year}`
+							? `${day.trim()}/${month.trim()}/${year.trim()}`
 							: `${selectedDate.date}/${selectedDate.month}/${selectedDate.year}`}
 					</small>
 					<button className="close-btn" onClick={handleClose}>
