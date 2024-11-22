@@ -77,6 +77,11 @@ const Calendar = () => {
 
 	const [daysOfPrevMonth, daysOfMonth, daysOfNextMonth] = getArrayWithDaysToDisplay();
 
+	// CHECK IF DATE TO RENDER IS IN THE PAST (FOR STYLING)
+	const isPastDate = (year: number, month: number, date: number)=> {
+		return new Date() > new Date(year, month, date +1)
+	}
+
 	const handleTodayClick = ()=> {
 		setMonth(new Date().getMonth());
 		setYear(new Date().getFullYear());
@@ -113,13 +118,14 @@ const Calendar = () => {
 					<div className="week-name">Sunday</div>
 				</div>
 			<div className="days">	
+				{/* RENDER DATES FROM EACH ARRAY daysOfPrevMonth, daysOfMonth, daysOfNextMonth */}
 				{daysOfPrevMonth.map((date) => (					
 					<DateOfMonth
 						key={date}
 						year={month === 0 ? year - 1 : year} // previous year if January
 						month={month === 0 ? 11 : month - 1} // December if January
 						date={date}
-						dayClass="old-month-day"
+						dayClass={isPastDate(year, month -1, date) ? "old-month-day non-month-day": "non-month-day"}
 						setModalOpen={setModalOpen}
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
@@ -132,7 +138,7 @@ const Calendar = () => {
 						year={year}
 						month={month}
 						date={date}
-						dayClass=""
+						dayClass={isPastDate(year, month, date) ? "old-month-day": ""}
 						setModalOpen={setModalOpen}
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
@@ -145,7 +151,7 @@ const Calendar = () => {
 						year={(month > 11 ) ? year +1: year} // Next year if December
 						month={month === 11 ? 0 : month + 1} // Jan if December
 						date={date}
-						dayClass="non-month-day"
+						dayClass={isPastDate(year, month +1, date) ? "old-month-day non-month-day": "non-month-day"}
 						setModalOpen={setModalOpen}
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
